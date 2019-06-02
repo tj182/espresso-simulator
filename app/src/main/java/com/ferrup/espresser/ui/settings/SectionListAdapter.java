@@ -63,7 +63,10 @@ public class SectionListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     itemViewHolder.textView.setText(String.valueOf(itemData.second));
                     itemViewHolder.titleView.setText(String.valueOf(itemData.first));
                 } else if (itemData.second instanceof Boolean) {
-                    //TODO: bind view for checkbox
+                    itemViewHolder.textView.setVisibility(View.GONE);
+                    itemViewHolder.checkboxView.setVisibility(View.VISIBLE);
+                    itemViewHolder.checkboxView.setChecked((boolean) itemData.second);
+                    itemViewHolder.titleView.setText(String.valueOf(itemData.first));
                 }
                 if (listener != null)
                     itemViewHolder.itemView.setOnClickListener(v -> listener.onItemClick(position, itemData));
