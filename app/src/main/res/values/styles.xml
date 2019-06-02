@@ -1,3 +1,18 @@
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar" />
+
+    <style name="Text">
+        <item name="android:textColor">#FFF</item>
+    </style>
+    <style name="Text.Header">
+        <item name="android:textSize">30dp</item>
+    </style>
+
+    <style name="Button">
+        <item name="android:layout_width">@dimen/header_height</item>
+        <item name="android:layout_height">@dimen/header_height</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
 </resources>
