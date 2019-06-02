@@ -1,7 +1,5 @@
 package com.ferrup.espresser.model;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 
 public class Data {

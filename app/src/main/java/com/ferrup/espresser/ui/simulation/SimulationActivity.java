@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.ferrup.espresser.App;
 import com.ferrup.espresser.R;
 import com.ferrup.espresser.Simulator;
+import com.ferrup.espresser.model.Data;
 import com.ferrup.espresser.ui.settings.SettingsActivity;
 
 import butterknife.BindView;
@@ -79,8 +80,16 @@ public class SimulationActivity extends AppCompatActivity {
 
         onSimulatorStateChange(simulator.getState());
         simulator.setOnStateChangeListener(this::onSimulatorStateChange);
+        onDataChange(simulator.getData());
+        simulator.setOnDataChangeListener(this::onDataChange);
 
         // TODO: setup views with data
+    }
+
+    private void onDataChange(Data data) {
+        runOnUiThread(() -> {
+
+        });
     }
 
     private void onSimulatorStateChange(Simulator.State simulatorState) {
@@ -89,7 +98,6 @@ public class SimulationActivity extends AppCompatActivity {
                 startButton.setEnabled(true);
                 pauseButton.setEnabled(false);
                 stopButton.setEnabled(false);
-                // stop visual simulation
                 break;
             case PAUSE:
                 startButton.setEnabled(false);
@@ -111,6 +119,7 @@ public class SimulationActivity extends AppCompatActivity {
         super.onPause();
 
         simulator.setOnStateChangeListener(null);
+        simulator.setOnDataChangeListener(null);
     }
 
     @Override
