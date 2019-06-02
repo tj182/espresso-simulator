@@ -23,6 +23,11 @@ public class SectionListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int TYPE_ITEM = 1;
 
     private ArrayList<Object> data;
+    private OnItemClickListener listener;
+
+    public interface OnItemClickListener {
+        void onItemClick(int position, Pair itemData);
+    }
 
     public SectionListAdapter(ArrayList<Object> data) {
         this.data = data;
@@ -50,16 +55,18 @@ public class SectionListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 ((SectionViewHolder) holder).textView.setText((String) data.get(position));
                 break;
             default:
-                Pair item = (Pair) data.get(position);
+                Pair itemData = (Pair) data.get(position);
                 ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-                if (item.second instanceof Integer) {
+                if (itemData.second instanceof Integer) {
                     itemViewHolder.checkboxView.setVisibility(View.GONE);
                     itemViewHolder.textView.setVisibility(View.VISIBLE);
-                    itemViewHolder.textView.setText(String.valueOf(item.second));
-                    itemViewHolder.titleView.setText(String.valueOf(item.first));
-                } else if (item.second instanceof Boolean) {
+                    itemViewHolder.textView.setText(String.valueOf(itemData.second));
+                    itemViewHolder.titleView.setText(String.valueOf(itemData.first));
+                } else if (itemData.second instanceof Boolean) {
                     //TODO: bind view for checkbox
                 }
+                if (listener != null)
+                    itemViewHolder.itemView.setOnClickListener(v -> listener.onItemClick(position, itemData));
                 break;
         }
     }
@@ -72,6 +79,15 @@ public class SectionListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public int getItemViewType(int position) {
         return data.get(position) instanceof String ? TYPE_SECTION : TYPE_ITEM;
+    }
+
+    public void setItemData(int position, Pair itemData) {
+        data.set(position, itemData);
+        notifyItemChanged(position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 
     static class SectionViewHolder extends RecyclerView.ViewHolder {

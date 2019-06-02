@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Espresso Simulator</string>
 
+    <!-- Common-->
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
     <string name="settings">Settings</string>
 
     <!-- Employees settings -->
