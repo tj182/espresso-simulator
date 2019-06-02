@@ -1,5 +1,22 @@
 <resources>
     <string name="app_name">Espresso Simulator</string>
 
+    <!-- Common-->
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
     <string name="settings">Settings</string>
+
+    <!-- Employees settings -->
+    <string name="company">Company</string>
+    <string name="employees_count">Employees count</string>
+    <string name="chance_of_super_busy">Chance of become super-busy in 1 hour (%)</string>
+    <string name="period_of_super_busy">Period of super-busyness (hour)</string>
+    <string name="coffee_interval">Coffee interval (min)</string>
+    
+    <!-- Coffee machine settings -->
+    <string name="coffee_machine">Coffee machine</string>
+    <string name="making_time">Making time (sec)</string>
+    <string name="outputs_count">Outputs count</string>
+    
 </resources>
