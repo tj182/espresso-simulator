@@ -1,13 +1,18 @@
-package com.ferrup.espresser.model;
+package com.ferrup.espresser;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.ferrup.espresser.model.AppSettings;
+import com.ferrup.espresser.model.Data;
 import com.ferrup.espresser.utils.Prefs;
 
 public class Simulator {
+    public static final String TAG = Simulator.class.getSimpleName();
+
     private Context context;
 
-    private AppSettings appSettings;
+    private Data data;
     private int speed = 1;
 
     private Thread worker;
@@ -24,8 +29,15 @@ public class Simulator {
             // remove first employee from queues
             // start make coffee if NEED and CAN
             // check employee is gone to be super-busy
+
+            // calculate speed
         } else if (state == State.PAUSE) {
-            // TODO: wait until run
+             try {
+                 Thread.sleep(100);
+             } catch (InterruptedException ex) {
+                 ex.printStackTrace();
+                 Log.e(TAG, ex.getMessage());
+             }
         }
     };
 
@@ -42,18 +54,19 @@ public class Simulator {
     public Simulator(Context context) {
         this.context = context;
         state = State.IDLE;
-        initAppSettings();
+        initData();
     }
 
-    private void initAppSettings() {
+    public void initData() {
         Prefs prefs = new Prefs(context);
-        appSettings = new AppSettings();
+        AppSettings appSettings = new AppSettings();
         appSettings.setEmployeesCount(prefs.getEmployeesCount());
         appSettings.setChanceOfSuperbusyness(prefs.getChanceOfSuperBusyness());
         appSettings.setPeriodOfSuperbusyness(prefs.getPeriodOfSuperBusyness());
         appSettings.setCoffeeInterval(prefs.getCoffeeInterval());
         appSettings.setMakingTime(prefs.getMakingTime());
         appSettings.setOutputsCount(prefs.getOutputsCount());
+        data = new Data(appSettings);
     }
 
     public void setSpeed(int value) {
@@ -83,7 +96,7 @@ public class Simulator {
     public void stop() {
         if (state == State.PAUSE || state == State.RUN) {
             setState(State.IDLE);
-            // TODO: reset data
+            initData();
         }
     }
 

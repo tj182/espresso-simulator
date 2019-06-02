@@ -1,5 +1,6 @@
 package com.ferrup.espresser.ui.simulation;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -10,7 +11,7 @@ import android.widget.TextView;
 
 import com.ferrup.espresser.App;
 import com.ferrup.espresser.R;
-import com.ferrup.espresser.model.Simulator;
+import com.ferrup.espresser.Simulator;
 import com.ferrup.espresser.ui.settings.SettingsActivity;
 
 import butterknife.BindView;
@@ -18,6 +19,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class SimulationActivity extends AppCompatActivity {
+    private static final int SETTINGS_ACTIVITY_RESULT = 100;
 
     Simulator simulator;
 
@@ -50,6 +52,7 @@ public class SimulationActivity extends AppCompatActivity {
         super.onStart();
 
         speedText.setText(getString(R.string.simulation_speed, simulator.getSpeed()));
+        speedSeekBar.setProgress((int) Math.log10(simulator.getSpeed()));
         speedSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             private int getSpeed(int progress) {
                 return (int) Math.pow(10, progress);
@@ -57,18 +60,14 @@ public class SimulationActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                // TODO: replace text
                 speedText.setText(getString(R.string.simulation_speed, getSpeed(progress)));
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // TODO: pause sim?
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                // TODO: inform sim
                 simulator.setSpeed(getSpeed(seekBar.getProgress()));
             }
         });
@@ -90,6 +89,7 @@ public class SimulationActivity extends AppCompatActivity {
                 startButton.setEnabled(true);
                 pauseButton.setEnabled(false);
                 stopButton.setEnabled(false);
+                // stop visual simulation
                 break;
             case PAUSE:
                 startButton.setEnabled(false);
@@ -113,10 +113,19 @@ public class SimulationActivity extends AppCompatActivity {
         simulator.setOnStateChangeListener(null);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == SETTINGS_ACTIVITY_RESULT) {
+            simulator.initData();
+        }
+    }
+
     @OnClick(R.id.settings_button)
     public void onSettingsClicked() {
         simulator.stop();
-        startActivity(new Intent(this, SettingsActivity.class));
+        startActivityForResult(new Intent(this, SettingsActivity.class), SETTINGS_ACTIVITY_RESULT);
     }
 
     @OnClick(R.id.start_button)

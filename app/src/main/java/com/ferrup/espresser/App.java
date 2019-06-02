@@ -2,8 +2,6 @@ package com.ferrup.espresser;
 
 import android.app.Application;
 
-import com.ferrup.espresser.model.Simulator;
-
 public class App extends Application {
     private static App sInstance;
 
