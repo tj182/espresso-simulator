@@ -11,6 +11,7 @@
     <string name="start">Start</string>
     <string name="pause">Pause</string>
     <string name="stop">Stop</string>
+    <string name="timer">Time: %s</string>
     <string name="office_employees">Office: %d/%d (%d)</string>
     <string name="normal_queue">Normal Queue: %d</string>
     <string name="super_busy_queue">Super Busy Queue: %d</string>
