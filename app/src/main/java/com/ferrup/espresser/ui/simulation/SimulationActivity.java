@@ -108,9 +108,6 @@ public class SimulationActivity extends AppCompatActivity {
         simulator.setOnStateChangeListener(this::onSimulatorStateChange);
         onDataChange(simulator.getData());
         simulator.setOnDataChangeListener(this::onDataChange);
-
-        // TODO: setup views with data
-
     }
 
     private void initProgressBars() {
