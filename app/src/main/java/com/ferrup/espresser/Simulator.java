@@ -44,6 +44,7 @@ public class Simulator {
 
                     // tick time to coffee machine outputs
                     data.coffeeMachine.tick(tick);
+                    data.date += tick * 1000L;
 
                     // check to update ui for each tick
                     if (speed <= UPDATES_LIMIT) {
@@ -230,6 +231,7 @@ public class Simulator {
 
     public void start() {
         if (state == State.IDLE || state == State.PAUSE) {
+            data.updateDate();
             setState(State.RUN);
             worker = new Thread(process,"SimulatorThread");
             worker.start();
