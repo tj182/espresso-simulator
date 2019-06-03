@@ -1,6 +1,7 @@
 package com.ferrup.espresser.model;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Data {
     public AppSettings appSettings;
@@ -9,13 +10,15 @@ public class Data {
     public ArrayList<Employee> superBusyQueue = new ArrayList<>();
     public CoffeeMachine coffeeMachine;
 
+    private Random random = new Random();
+
     public Data(AppSettings appSettings) {
         this.appSettings = appSettings;
         for (int i = 0; i < appSettings.getEmployeesCount(); i++) {
             office.add(new Employee(
                     appSettings.getChanceOfSuperbusyness(),
                     appSettings.getPeriodOfSuperbusyness(),
-                    appSettings.getCoffeeInterval()));
+                    appSettings.getCoffeeInterval() + random.nextInt(Math.abs(appSettings.getCoffeeIntervalError()))));
         }
         coffeeMachine = new CoffeeMachine(appSettings.getOutputsCount(), appSettings.getMakingTime());
     }

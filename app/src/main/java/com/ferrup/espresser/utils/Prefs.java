@@ -9,6 +9,7 @@ public class Prefs {
     private static final String SETTINGS_CHANSE_OF_SUPERBUSYNESS = "SETTINGS_CHANSE_OF_SUPERBUSYNESS";
     private static final String SETTINGS_PERIOD_OF_SUPERBUSYNESS = "SETTINGS_PERIOD_OF_SUPERBUSYNESS";
     private static final String SETTINGS_COFFEE_INTERVAL = "SETTINGS_COFFEE_INTERVAL";
+    private static final String SETTINGS_COFFEE_INTERVAL_ERROR = "SETTINGS_COFFEE_INTERVAL_ERROR";
     private static final String SETTINGS_MAKING_TIME = "SETTINGS_MAKING_TIME";
     private static final String SETTINGS_OUTPUTS_COUNT = "SETTINGS_OUTPUTS_COUNT";
 
@@ -63,6 +64,16 @@ public class Prefs {
     public void setCoffeeInterval(int mins) {
         SharedPreferences.Editor editor = getSettingsPrefs().edit();
         editor.putInt(SETTINGS_COFFEE_INTERVAL, mins);
+        editor.apply();
+    }
+
+    public int getCoffeeIntervalError() {
+        return getSettingsPrefs().getInt(SETTINGS_COFFEE_INTERVAL_ERROR, 10);
+    }
+
+    public void setCoffeeIntervalError(int mins) {
+        SharedPreferences.Editor editor = getSettingsPrefs().edit();
+        editor.putInt(SETTINGS_COFFEE_INTERVAL_ERROR, mins);
         editor.apply();
     }
 

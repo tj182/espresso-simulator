@@ -71,6 +71,7 @@ public class SettingsActivity extends AppCompatActivity {
         settings.add(new Pair<>(getString(R.string.chance_of_super_busy), prefs.getChanceOfSuperBusyness()));
         settings.add(new Pair<>(getString(R.string.period_of_super_busy), prefs.getPeriodOfSuperBusyness()));
         settings.add(new Pair<>(getString(R.string.coffee_interval), prefs.getCoffeeInterval()));
+        settings.add(new Pair<>(getString(R.string.coffee_interval_error), prefs.getCoffeeIntervalError()));
         settings.add(getString(R.string.coffee_machine));
         settings.add(new Pair<>(getString(R.string.making_time), prefs.getMakingTime()));
         settings.add(new Pair<>(getString(R.string.outputs_count), prefs.getOutputsCount()));
@@ -94,6 +95,8 @@ public class SettingsActivity extends AppCompatActivity {
             prefs.setPeriodOfSuperBusyness((int) itemData.second);
         } else if (pref.equals(getString(R.string.coffee_interval))) {
             prefs.setCoffeeInterval((int) itemData.second);
+        } else if (pref.equals(getString(R.string.coffee_interval_error))) {
+            prefs.setCoffeeIntervalError((int) itemData.second);
         } else if (pref.equals(getString(R.string.making_time))) {
             prefs.setMakingTime((int) itemData.second);
         } else if (pref.equals(getString(R.string.outputs_count))) {

@@ -24,6 +24,7 @@
     <string name="chance_of_super_busy">Chance of become super-busy in 1 hour (%)</string>
     <string name="period_of_super_busy">Period of super-busyness (hour)</string>
     <string name="coffee_interval">Coffee interval (min)</string>
+    <string name="coffee_interval_error">Coffee interval error (min)</string>
     <!-- Coffee machine settings -->
     <string name="coffee_machine">Coffee Machine</string>
     <string name="making_time">Making time (sec)</string>

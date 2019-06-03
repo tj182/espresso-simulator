@@ -214,6 +214,7 @@ public class Simulator {
         appSettings.setChanceOfSuperbusyness(prefs.getChanceOfSuperBusyness());
         appSettings.setPeriodOfSuperbusyness(prefs.getPeriodOfSuperBusyness());
         appSettings.setCoffeeInterval(prefs.getCoffeeInterval());
+        appSettings.setCoffeeIntervalError(prefs.getCoffeeIntervalError());
         appSettings.setMakingTime(prefs.getMakingTime());
         appSettings.setOutputsCount(prefs.getOutputsCount());
         data = new Data(appSettings);

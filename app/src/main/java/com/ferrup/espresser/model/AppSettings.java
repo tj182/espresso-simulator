@@ -5,6 +5,7 @@ public class AppSettings {
     private int chanceOfSuperbusyness;
     private int periodOfSuperbusyness;
     private int coffeeInterval;
+    private int coffeeIntervalError;
     private int makingTime;
     private int outputsCount;
 
@@ -38,6 +39,14 @@ public class AppSettings {
 
     public void setCoffeeInterval(int coffeeInterval) {
         this.coffeeInterval = coffeeInterval;
+    }
+
+    public int getCoffeeIntervalError() {
+        return coffeeIntervalError;
+    }
+
+    public void setCoffeeIntervalError(int coffeeIntervalError) {
+        this.coffeeIntervalError = coffeeIntervalError;
     }
 
     public int getMakingTime() {
