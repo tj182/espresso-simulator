@@ -11,6 +11,10 @@
     <string name="start">Start</string>
     <string name="pause">Pause</string>
     <string name="stop">Stop</string>
+    <string name="office_employees">Office: %d/%d (%d)</string>
+    <string name="normal_queue">Normal Queue: %d</string>
+    <string name="super_busy_queue">Super Busy Queue: %d</string>
+    <string name="coffee_progress">Coffee %d: %d/%d</string>
 
     <!-- Settings -->
     <string name="settings">Settings</string>
@@ -21,7 +25,7 @@
     <string name="period_of_super_busy">Period of super-busyness (hour)</string>
     <string name="coffee_interval">Coffee interval (min)</string>
     <!-- Coffee machine settings -->
-    <string name="coffee_machine">Coffee machine</string>
+    <string name="coffee_machine">Coffee Machine</string>
     <string name="making_time">Making time (sec)</string>
     <string name="outputs_count">Outputs count</string>
     

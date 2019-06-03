@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -39,6 +40,27 @@ public class SimulationActivity extends AppCompatActivity {
     @BindView(R.id.stop_button)
     Button stopButton;
 
+    @BindView(R.id.office_text)
+    TextView officeText;
+
+    @BindView(R.id.office_bar)
+    ProgressBar officeBar;
+
+    @BindView(R.id.normal_text)
+    TextView normalText;
+
+    @BindView(R.id.normal_bar)
+    ProgressBar normalBar;
+
+    @BindView(R.id.super_busy_text)
+    TextView superBusyText;
+
+    @BindView(R.id.super_busy_bar)
+    ProgressBar superBusyBar;
+
+    @BindView(R.id.coffee_machine_text)
+    TextView coffeeMachineText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,8 +74,7 @@ public class SimulationActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        speedText.setText(getString(R.string.simulation_speed, simulator.getSpeed()));
-        speedSeekBar.setProgress((int) Math.log10(simulator.getSpeed()));
+
         speedSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             private int getSpeed(int progress) {
                 return (int) Math.pow(10, progress);
@@ -61,7 +82,8 @@ public class SimulationActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                speedText.setText(getString(R.string.simulation_speed, getSpeed(progress)));
+                if (fromUser)
+                    speedText.setText(getString(R.string.simulation_speed, getSpeed(progress)));
             }
 
             @Override
@@ -78,17 +100,47 @@ public class SimulationActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        speedText.setText(getString(R.string.simulation_speed, simulator.getSpeed()));
+        speedSeekBar.setProgress((int) Math.log10(simulator.getSpeed()));
+        initProgressBars();
+
         onSimulatorStateChange(simulator.getState());
         simulator.setOnStateChangeListener(this::onSimulatorStateChange);
         onDataChange(simulator.getData());
         simulator.setOnDataChangeListener(this::onDataChange);
 
         // TODO: setup views with data
+
+    }
+
+    private void initProgressBars() {
+        officeBar.setMax(simulator.getData().appSettings.getEmployeesCount());
+        normalBar.setMax(simulator.getData().appSettings.getEmployeesCount());
+        superBusyBar.setMax(simulator.getData().appSettings.getEmployeesCount());
     }
 
     private void onDataChange(Data data) {
         runOnUiThread(() -> {
+            synchronized (Simulator.sLock) {
+                officeText.setText(getString(R.string.office_employees, data.office.size(), data.appSettings.getEmployeesCount(), data.getSuperBusyCountInOffice()));
+                officeBar.setProgress(data.office.size());
 
+                normalText.setText(getString(R.string.normal_queue, data.normalQueue.size()));
+                normalBar.setProgress(data.normalQueue.size());
+
+                superBusyText.setText(getString(R.string.super_busy_queue, data.superBusyQueue.size()));
+                superBusyBar.setProgress(data.superBusyQueue.size());
+
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < data.coffeeMachine.getOutputs().size(); i++) {
+                    if (i != 0) builder.append('\n');
+                    builder.append(getString(R.string.coffee_progress,
+                            i + 1,
+                            data.coffeeMachine.getOutputs().get(i),
+                            data.appSettings.getMakingTime()));
+                }
+                coffeeMachineText.setText(builder.toString());
+            }
         });
     }
 
@@ -150,5 +202,6 @@ public class SimulationActivity extends AppCompatActivity {
     @OnClick(R.id.stop_button)
     public void onStopClicked() {
         simulator.stop();
+        onDataChange(simulator.getData());
     }
 }

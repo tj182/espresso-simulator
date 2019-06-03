@@ -39,4 +39,8 @@ public class CoffeeMachine {
     public void startMakingCoffee() {
         outputs.add(0);
     }
+
+    public ArrayList<Integer> getOutputs() {
+        return outputs;
+    }
 }

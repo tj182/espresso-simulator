@@ -14,10 +14,12 @@ import java.util.Random;
 public class Simulator {
     public static final String TAG = Simulator.class.getSimpleName();
     public static final int UPDATES_LIMIT = 100;
+    public static final int SIMPLIFIER_BUFFER = 50;
+    public static final Object sLock = new Object();
 
     private Context context;
 
-    private volatile Data data;
+    private Data data;
     private int speed = 1;
 
     private Random random = new Random();
@@ -29,117 +31,129 @@ public class Simulator {
 
     private Runnable process = () -> {
         final int tick = 1;
+        int simplifier = 0;
         while (state != State.IDLE) {
             if (state == State.RUN) {
                 long startTime = System.nanoTime();
                 boolean dataChanged = false;
-                // tick time to employees
-                for (Employee employee : data.office) {
-                    employee.tick(tick);
-                }
-
-                // tick time to coffee machine outputs
-                data.coffeeMachine.tick(tick);
-                if (speed <= UPDATES_LIMIT) dataChanged = true;
-
-                // check employee is going to be super-busy
-                for (Employee employee : data.office) { // in the office
-                     if (employee.isBecameSuperBusy(tick, random.nextFloat())) {
-                         employee.setSuperBusy(true);
-                     }
-                }
-                for (Employee employee : data.normalQueue) { // in normal queue
-                    if (employee.isBecameSuperBusy(tick, random.nextFloat())) {
-                        employee.setSuperBusy(true);
+                synchronized (sLock) {
+                    // tick time to employees
+                    for (Employee employee : data.office) {
+                        employee.tick(tick);
                     }
-                }
 
-                // move super-busy employees from non-super-busy queue
-                ArrayList<Employee> movableEmployees = new ArrayList<>();
-                for (Employee employee : data.normalQueue) {
-                    if (employee.isSuperBusy()) {
-                        movableEmployees.add(employee);
+                    // tick time to coffee machine outputs
+                    data.coffeeMachine.tick(tick);
+
+                    // check to update ui for each tick
+                    if (speed <= UPDATES_LIMIT) {
                         dataChanged = true;
-                    }
-                }
-                data.superBusyQueue.addAll(movableEmployees);
-                for (Employee employee : movableEmployees) {
-                    data.normalQueue.remove(employee);
-                }
-
-                // check employee want coffee
-                ArrayList<Employee> coffeeWantedNormalEmployees = new ArrayList<>();
-                ArrayList<Employee> coffeeWantedSuperBusyEmployees = new ArrayList<>();
-                for (Employee employee : data.office) {
-                    if (employee.isWantCoffee()) {
-                        if (employee.isSuperBusy()) {
-                            coffeeWantedSuperBusyEmployees.add(employee);
-                        } else {
-                            coffeeWantedNormalEmployees.add(employee);
-                        }
-                        dataChanged = true;
-                    }
-                }
-                data.superBusyQueue.addAll(coffeeWantedSuperBusyEmployees);
-                data.normalQueue.addAll(coffeeWantedNormalEmployees);
-                for (Employee employee : coffeeWantedSuperBusyEmployees) {
-                    data.office.remove(employee);
-                }
-                for (Employee employee : coffeeWantedNormalEmployees) {
-                    data.office.remove(employee);
-                }
-
-                // give coffee from outputs if ready
-                int coffeesReady = data.coffeeMachine.popReadyCoffees();
-
-                // remove first employee from queues
-                ArrayList<Employee> coffeedEmployees = new ArrayList<>();
-                for (Employee employee : data.superBusyQueue) {
-                    if (coffeesReady > 0) {
-                        coffeedEmployees.add(employee);
-                        dataChanged = true;
-                        coffeesReady--;
-                    } else break;
-                }
-                for (Employee employee : data.normalQueue) {
-                    if (coffeesReady > 0) {
-                        coffeedEmployees.add(employee);
-                        dataChanged = true;
-                        coffeesReady--;
-                    } else break;
-                }
-                data.office.addAll(coffeedEmployees);
-                for (Employee employee : coffeedEmployees) {
-                    data.superBusyQueue.remove(employee);
-                    data.normalQueue.remove(employee);
-                    employee.resetCoffeeTime();
-                }
-
-                // start make coffee if NEED and CAN
-                int emptyOutputs = data.coffeeMachine.getEmptyOutputs();
-                if (emptyOutputs > 0) {
-                    for (Employee employee : data.superBusyQueue) {
-                        if (emptyOutputs > 0) {
-                            data.coffeeMachine.startMakingCoffee();
+                    } else {
+                        if (simplifier++ >= SIMPLIFIER_BUFFER) {
+                            simplifier = 0;
                             dataChanged = true;
-                            emptyOutputs--;
+                        }
+                    }
+
+                    // check employee is going to be super-busy
+                    for (Employee employee : data.office) { // in the office
+                        if (employee.isBecameSuperBusy(random.nextFloat())) {
+                            employee.setSuperBusy(true);
+                        }
+                    }
+                    for (Employee employee : data.normalQueue) { // in normal queue
+                        if (employee.isBecameSuperBusy(random.nextFloat())) {
+                            employee.setSuperBusy(true);
+                        }
+                    }
+
+                    // move super-busy employees from non-super-busy queue
+                    ArrayList<Employee> movableEmployees = new ArrayList<>();
+                    for (Employee employee : data.normalQueue) {
+                        if (employee.isSuperBusy()) {
+                            movableEmployees.add(employee);
+                            dataChanged = true;
+                        }
+                    }
+                    data.superBusyQueue.addAll(movableEmployees);
+                    for (Employee employee : movableEmployees) {
+                        data.normalQueue.remove(employee);
+                    }
+
+                    // check employee want coffee
+                    ArrayList<Employee> coffeeWantedNormalEmployees = new ArrayList<>();
+                    ArrayList<Employee> coffeeWantedSuperBusyEmployees = new ArrayList<>();
+                    for (Employee employee : data.office) {
+                        if (employee.isWantCoffee()) {
+                            if (employee.isSuperBusy()) {
+                                coffeeWantedSuperBusyEmployees.add(employee);
+                            } else {
+                                coffeeWantedNormalEmployees.add(employee);
+                            }
+                            dataChanged = true;
+                        }
+                    }
+                    data.superBusyQueue.addAll(coffeeWantedSuperBusyEmployees);
+                    data.normalQueue.addAll(coffeeWantedNormalEmployees);
+                    for (Employee employee : coffeeWantedSuperBusyEmployees) {
+                        data.office.remove(employee);
+                    }
+                    for (Employee employee : coffeeWantedNormalEmployees) {
+                        data.office.remove(employee);
+                    }
+
+                    // give coffee from outputs if ready
+                    int coffeesReady = data.coffeeMachine.popReadyCoffees();
+
+                    // remove first employee from queues
+                    ArrayList<Employee> coffeedEmployees = new ArrayList<>();
+                    for (Employee employee : data.superBusyQueue) {
+                        if (coffeesReady > 0) {
+                            coffeedEmployees.add(employee);
+                            dataChanged = true;
+                            coffeesReady--;
                         } else break;
                     }
                     for (Employee employee : data.normalQueue) {
-                        if (emptyOutputs > 0) {
-                            data.coffeeMachine.startMakingCoffee();
+                        if (coffeesReady > 0) {
+                            coffeedEmployees.add(employee);
                             dataChanged = true;
-                            emptyOutputs--;
+                            coffeesReady--;
                         } else break;
                     }
-                }
+                    data.office.addAll(coffeedEmployees);
+                    for (Employee employee : coffeedEmployees) {
+                        data.superBusyQueue.remove(employee);
+                        data.normalQueue.remove(employee);
+                        employee.resetCoffeeTime();
+                    }
 
-                // check employee is gone to be super-busy
-                for (Employee employee : data.office) {
-                    if (employee.inNotSuperBusyAnymore()) employee.setSuperBusy(false);
-                }
-                for (Employee employee : data.superBusyQueue) { // but not remove him from this queue
-                    if (employee.inNotSuperBusyAnymore()) employee.setSuperBusy(false);
+                    // start make coffee if NEED and CAN
+                    int emptyOutputs = data.coffeeMachine.getEmptyOutputs();
+                    if (emptyOutputs > 0) {
+                        for (Employee employee : data.superBusyQueue) {
+                            if (emptyOutputs > 0) {
+                                data.coffeeMachine.startMakingCoffee();
+                                dataChanged = true;
+                                emptyOutputs--;
+                            } else break;
+                        }
+                        for (Employee employee : data.normalQueue) {
+                            if (emptyOutputs > 0) {
+                                data.coffeeMachine.startMakingCoffee();
+                                dataChanged = true;
+                                emptyOutputs--;
+                            } else break;
+                        }
+                    }
+
+                    // check employee is gone to be super-busy
+                    for (Employee employee : data.office) {
+                        if (employee.inNotSuperBusyAnymore()) employee.setSuperBusy(false);
+                    }
+                    for (Employee employee : data.superBusyQueue) { // but not remove him from this queue
+                        if (employee.inNotSuperBusyAnymore()) employee.setSuperBusy(false);
+                    }
                 }
 
                 // calculate speed

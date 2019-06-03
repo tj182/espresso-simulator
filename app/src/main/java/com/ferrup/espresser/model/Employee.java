@@ -28,8 +28,8 @@ public class Employee {
         superBusyTime += secs;
     }
 
-    public boolean isBecameSuperBusy(int secs, float random) {
-        return secs * chanceOfSuperBusy < random;
+    public boolean isBecameSuperBusy(float random) {
+        return chanceOfSuperBusy >= random;
     }
 
     public boolean inNotSuperBusyAnymore() {
