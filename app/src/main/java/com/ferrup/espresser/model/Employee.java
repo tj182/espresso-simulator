@@ -1,5 +1,7 @@
 package com.ferrup.espresser.model;
 
+import java.util.Random;
+
 public class Employee {
     private float chanceOfSuperBusy;
     private int periodOfSuperBusy;
@@ -9,10 +11,14 @@ public class Employee {
     private int superBusyTime = 0;
     private int coffeeTime = 0;
 
-    public Employee(int chanceOfSuperBusy /* % in 1 hour */, int periodOfSuperBusy /* hours */, int coffeeInterval /* mins */) {
+    public Employee(int chanceOfSuperBusy /* % in 1 hour */,
+                    int periodOfSuperBusy /* hours */,
+                    int coffeeInterval /* mins */,
+                    int coffeeIntervalError /* mins */) {
+        Random random = new Random();
         this.chanceOfSuperBusy = ((float) chanceOfSuperBusy) / 3600F / 100F;
         this.periodOfSuperBusy = periodOfSuperBusy * 3600;
-        this.coffeeInterval = coffeeInterval * 60;
+        this.coffeeInterval = coffeeInterval * 60 + (int) ((random.nextFloat() - 0.5f) * coffeeIntervalError * 60);
     }
 
     public boolean isSuperBusy() {
@@ -21,11 +27,12 @@ public class Employee {
 
     public void setSuperBusy(boolean value) {
         superBusy = value;
+        if (value) superBusyTime = 0;
     }
 
     public void tick(int secs) {
         coffeeTime += secs;
-        superBusyTime += secs;
+        if (superBusy) superBusyTime += secs;
     }
 
     public boolean isBecameSuperBusy(float random) {

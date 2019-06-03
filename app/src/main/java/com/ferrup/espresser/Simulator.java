@@ -67,7 +67,7 @@ public class Simulator {
                         }
                     }
 
-                    // move super-busy employees from non-super-busy queue
+                    // move super-busy employees from normal queue
                     ArrayList<Employee> movableEmployees = new ArrayList<>();
                     for (Employee employee : data.normalQueue) {
                         if (employee.isSuperBusy()) {
