@@ -61,6 +61,9 @@ public class SimulationActivity extends AppCompatActivity {
     @BindView(R.id.coffee_machine_text)
     TextView coffeeMachineText;
 
+    @BindView(R.id.timerText)
+    TextView timerText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,6 +140,7 @@ public class SimulationActivity extends AppCompatActivity {
                             data.appSettings.getMakingTime()));
                 }
                 coffeeMachineText.setText(builder.toString());
+                timerText.setText(getString(R.string.timer, data.formatDate()));
             }
         });
     }
